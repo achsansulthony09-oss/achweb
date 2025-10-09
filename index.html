@@ -114,6 +114,7 @@
     <button onclick="showSection('profileSection')">🙍‍♂️ Profil</button>
     <button onclick="showSection('todoSection')">🧾 To-Do List</button>
     <button onclick="showSection('portfolioSection')">💼 Portfolio</button>
+    <button onclick="logout()">🚪 Logout</button>
   </nav>
 
   <div id="dashboardSection" class="section active">
@@ -148,74 +149,105 @@
 
   <div id="portfolioSection" class="section">
     <div class="block">
-      <h3>💼 Portfolio Pemilik web</h3>
+      <h3>💼 Portfolio Pemilik Web</h3>
       <p>Nama : Achsan Sulthony Akbar</p>
-      <p> School : IDN BACKPACKER SCHOOL SENTUL</p>
-      <p> Scratch : Ctchfrt,TMO,BB,FH,</p>
+      <p>Sekolah : IDN BACKPACKER SCHOOL SENTUL</p>
+      <p>Skill : Ctchfrt, TMO, BB, FH</p>
     </div>
   </div>
 </div>
 
 <script>
-let users=[];
-let currentUser=null;
-let currentCategory="ibadah";
-let tasks={ibadah:[],belajar:[]};
+let users = JSON.parse(sessionStorage.getItem("savedUsers")) || [];
+let currentUser = null;
+let currentCategory = "ibadah";
+let tasks = { ibadah: [], belajar: [] };
 
-function showRegister(){document.getElementById("loginPage").style.display="none";document.getElementById("registerPage").style.display="block";}
-function showLogin(){document.getElementById("registerPage").style.display="none";document.getElementById("loginPage").style.display="block";}
+function showRegister(){ 
+  document.getElementById("loginPage").style.display="none";
+  document.getElementById("registerPage").style.display="block";
+}
+function showLogin(){ 
+  document.getElementById("registerPage").style.display="none";
+  document.getElementById("loginPage").style.display="block";
+}
 function register(){
-  const u=document.getElementById("newUsername").value.trim();
-  const p=document.getElementById("newPassword").value.trim();
-  if(!u||!p)return alert("Isi username dan password!");
+  const u = document.getElementById("newUsername").value.trim();
+  const p = document.getElementById("newPassword").value.trim();
+  if(!u || !p) return alert("Isi username dan password!");
   users.push({u,p});
+  sessionStorage.setItem("savedUsers", JSON.stringify(users));
   alert("Akun berhasil dibuat!");
   showLogin();
 }
 function login(){
-  const u=document.getElementById("username").value.trim();
-  const p=document.getElementById("password").value.trim();
-  const found=users.find(x=>x.u===u&&x.p===p);
-  if(!found)return alert("Username atau password salah!");
-  currentUser=u;
-  document.getElementById("displayUser").textContent=u;
-  document.getElementById("loginPage").style.display="none";
-  document.getElementById("dashboardPage").style.display="block";
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value.trim();
+  const found = users.find(x => x.u === u && x.p === p);
+  if(!found) return alert("Username atau password salah!");
+  currentUser = u;
+  sessionStorage.setItem("loggedInUser", u);
+  document.getElementById("displayUser").textContent = u;
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("dashboardPage").style.display = "block";
+}
+function checkSession(){
+  const savedUser = sessionStorage.getItem("loggedInUser");
+  if(savedUser){
+    currentUser = savedUser;
+    document.getElementById("displayUser").textContent = savedUser;
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboardPage").style.display = "block";
+  }
+}
+function logout(){
+  sessionStorage.removeItem("loggedInUser");
+  document.getElementById("dashboardPage").style.display="none";
+  document.getElementById("loginPage").style.display="block";
 }
 function showSection(id){
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 function setCategory(cat){
-  currentCategory=cat;
-  document.getElementById("btnIbadah").classList.toggle("active",cat==="ibadah");
-  document.getElementById("btnBelajar").classList.toggle("active",cat==="belajar");
+  currentCategory = cat;
+  document.getElementById("btnIbadah").classList.toggle("active", cat==="ibadah");
+  document.getElementById("btnBelajar").classList.toggle("active", cat==="belajar");
   renderTasks();
 }
 function addTask(){
-  const t=document.getElementById("taskInput").value.trim();
-  if(!t)return;
+  const t = document.getElementById("taskInput").value.trim();
+  if(!t) return;
   tasks[currentCategory].push({text:t,done:false});
-  document.getElementById("taskInput").value="";
+  document.getElementById("taskInput").value = "";
   renderTasks();
 }
 function toggleDone(idx){
-  tasks[currentCategory][idx].done=!tasks[currentCategory][idx].done;
+  tasks[currentCategory][idx].done = !tasks[currentCategory][idx].done;
+  renderTasks();
+}
+function deleteTask(idx){
+  tasks[currentCategory].splice(idx,1);
   renderTasks();
 }
 function renderTasks(){
-  const cont=document.getElementById("tasks");
-  cont.innerHTML="";
+  const cont = document.getElementById("tasks");
+  cont.innerHTML = "";
   tasks[currentCategory].forEach((t,i)=>{
-    const div=document.createElement("div");
-    div.className="task"+(t.done?" done":"");
-    div.innerHTML=`<span>${t.text}</span>
+    const div = document.createElement("div");
+    div.className = "task"+(t.done?" done":"");
+    div.innerHTML = `<span>${t.text}</span>
       <div class='buttons'>
         <button class='done-btn' onclick='toggleDone(${i})'>✓</button>
+        <button class='delete-btn' onclick='deleteTask(${i})'>🗑️</button>
       </div>`;
     cont.appendChild(div);
   });
 }
+document.getElementById("taskInput").addEventListener("keydown", e=>{
+  if(e.key==="Enter") addTask();
+});
+window.onload = checkSession;
 </script>
 </body>
 </html>
