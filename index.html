@@ -3,20 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ach's super web</title>
+<title>Ach's Super Web</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
   body{
     background:linear-gradient(135deg,#e0f2fe,#f0f9ff);
     display:flex;justify-content:center;align-items:center;
-    height:100vh;
+    height:100vh;overflow:hidden;
   }
   .login-container,.dashboard{
     background:white;padding:40px;border-radius:20px;
     box-shadow:0 5px 25px rgba(0,0,0,0.1);
     width:400px;animation:fadeIn .4s ease-in;
   }
-  @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+  @keyframes fadeIn {
+    from {opacity:0;transform:translateY(15px) scale(0.98);}
+    to {opacity:1;transform:translateY(0) scale(1);}
+  }
+  @keyframes fadeOut {
+    from {opacity:1;transform:translateY(0);}
+    to {opacity:0;transform:translateY(40px);}
+  }
+
   h2{color:#1d4ed8;margin-bottom:15px;text-align:center;}
   input{
     width:100%;padding:10px;margin:10px 0;border-radius:10px;
@@ -25,16 +34,18 @@
   input:focus{border-color:#2563eb;box-shadow:0 0 5px #93c5fd;}
   button{
     padding:10px 15px;border:none;border-radius:10px;
-    background:#2563eb;color:white;font-weight:bold;cursor:pointer;
-    transition:.3s;background:linear-gradient(90deg,#2563eb,#1d4ed8);
+    background:linear-gradient(90deg,#2563eb,#1d4ed8);
+    color:white;font-weight:bold;cursor:pointer;
+    transition:.3s;
   }
-  button:hover{opacity:.85;}
+  button:hover{opacity:.85;transform:scale(1.05);}
   .note{text-align:center;font-size:13px;margin-top:5px;}
   .top-right{
     position:fixed;top:15px;right:25px;
     font-weight:bold;font-size:18px;color:#1d4ed8;
     text-shadow:0 0 4px rgba(37,99,235,0.2);
   }
+
   nav{
     display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:25px;
   }
@@ -42,21 +53,29 @@
     background:#e0e7ff;color:#1e3a8a;padding:8px 15px;
     border-radius:10px;font-weight:500;transition:.3s;
   }
-  nav button:hover{background:#c7d2fe;}
-  .section{display:none;}
-  .active{display:block;}
+  nav button:hover{background:#c7d2fe;transform:translateY(-2px);}
+  .section{display:none;opacity:0;transform:translateY(20px);transition:all .4s ease;}
+  .active{
+    display:block !important;
+    opacity:1 !important;
+    transform:translateY(0) scale(1);
+    animation:fadeIn .5s ease-in-out;
+  }
+  .fade-out{
+    animation:fadeOut .4s ease forwards;
+  }
+
   .block{
     background:#f9fafb;border-radius:15px;
     padding:20px;margin-bottom:25px;
     box-shadow:0 3px 12px rgba(0,0,0,0.06);
   }
   .block h3{
-    font-size:18px;
-    color:#1e40af;
-    margin-bottom:10px;
+    font-size:18px;color:#1e40af;margin-bottom:10px;
     display:flex;align-items:center;gap:6px;
   }
   .block p{color:#374151;line-height:1.6;text-align:justify;font-size:14px;}
+
   /* To Do List */
   .category-buttons{
     display:flex;justify-content:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;
@@ -66,24 +85,60 @@
     border-radius:8px;cursor:pointer;font-weight:500;transition:.3s;
   }
   .category-buttons button.active{background:#2563eb;color:white;}
-  #todoList input[type=text]{
-    width:100%;padding:8px;margin-bottom:8px;
-    border-radius:8px;border:1px solid #d1d5db;
-  }
+  #todoList input[type=text]{width:100%;padding:8px;margin-bottom:8px;border-radius:8px;border:1px solid #d1d5db;}
   .task{
     background:#f0f9ff;padding:8px 12px;border-radius:10px;margin-bottom:6px;
     display:flex;justify-content:space-between;align-items:center;
     border-left:4px solid #2563eb;
   }
   .task.done{
-    background:#dcfce7;border-left-color:#16a34a;
-    text-decoration:line-through;color:#15803d;
+    background:#dcfce7;border-left-color:#16a34a;text-decoration:line-through;color:#15803d;
   }
   .task .buttons{display:flex;gap:5px;}
   .done-btn{background:#22c55e;}
   .done-btn:hover{background:#16a34a;}
   .delete-btn{background:#ef4444;}
   .delete-btn:hover{background:#b91c1c;}
+
+  /* Jadwal popup */
+  #jadwalPopup {
+    display:none;
+    position:fixed;
+    top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.4);
+    justify-content:center;align-items:center;
+    z-index:999;
+    animation:fadeIn .4s ease-in-out;
+  }
+  #jadwalBox {
+    background:white;
+    width:85%;max-width:900px;
+    max-height:90vh;overflow:auto;
+    border-radius:20px;padding:30px;
+    box-shadow:0 5px 25px rgba(0,0,0,0.2);
+    animation:popupIn .5s ease forwards;
+  }
+  @keyframes popupIn {
+    from {opacity:0;transform:scale(0.85) translateY(20px);}
+    to {opacity:1;transform:scale(1) translateY(0);}
+  }
+  @keyframes popupOut {
+    from {opacity:1;transform:translateY(0);}
+    to {opacity:0;transform:translateY(40px);}
+  }
+  table{width:100%;border-collapse:collapse;margin-top:15px;}
+  th,td{
+    border:1px solid #cbd5e1;padding:10px;text-align:left;
+    vertical-align:top;font-size:14px;
+  }
+  th{background:#2563eb;color:white;text-align:center;}
+  td b{color:#1e40af;}
+  .exit-btn{
+    background:#ef4444;color:white;padding:8px 14px;
+    border:none;border-radius:10px;cursor:pointer;
+    float:right;margin-bottom:10px;transition:.3s;
+  }
+  .exit-btn:hover{background:#b91c1c;transform:scale(1.05);}
 </style>
 </head>
 <body>
@@ -114,6 +169,7 @@
     <button onclick="showSection('profileSection')">🙍‍♂️ Profil</button>
     <button onclick="showSection('todoSection')">🧾 To-Do List</button>
     <button onclick="showSection('portfolioSection')">💼 Portfolio</button>
+    <button onclick="showJadwal()">📅 Jadwal IDN Teaching</button>
     <button onclick="logout()">🚪 Logout</button>
   </nav>
 
@@ -152,8 +208,31 @@
       <h3>💼 Portfolio Pemilik Web</h3>
       <p>Nama : Achsan Sulthony Akbar</p>
       <p>Sekolah : IDN BACKPACKER SCHOOL SENTUL</p>
-      <p>Skill : Ctchfrt, TMO, BB, FH</p>
+      <p>Skill : Catching Fruit, Take Me Out, Canva Poster</p>
     </div>
+  </div>
+</div>
+
+<!-- Popup Jadwal -->
+<div id="jadwalPopup">
+  <div id="jadwalBox">
+    <button class="exit-btn" onclick="closeJadwal()">❌ Kembali</button>
+    <h2 style="text-align:center;color:#1d4ed8;">📅 Jadwal Mengajar IDN Teaching</h2>
+    <table>
+      <tr><th>Hari</th><th>Waktu</th><th>Materi</th><th>Topik</th><th>Durasi</th><th>Kegiatan & Tujuan Pembelajaran</th></tr>
+      <tr>
+        <td><b>Hari 1</b></td><td>08.00 – 09.30</td><td><b>Scratch</b></td><td><i>Game: Catching Fruit</i></td><td>2 JP</td>
+        <td>- Pengenalan dasar Scratch (sprite, stage, script).<br>- Membuat game menangkap buah.<br>- <b>Tujuan:</b> Siswa dapat membuat game sederhana.</td>
+      </tr>
+      <tr>
+        <td><b>Hari 2</b></td><td>08.00 – 09.30</td><td><b>Scratch</b></td><td><i>Game: Take Me Out</i></td><td>2 JP</td>
+        <td>- Review materi sebelumnya.<br>- Membuat game “Take Me Out”.<br>- <b>Tujuan:</b> Siswa memahami logika kondisi & event.</td>
+      </tr>
+      <tr>
+        <td><b>Hari 3</b></td><td>08.00 – 09.30</td><td><b>Canva</b></td><td><i>Desain Poster Edukasi</i></td><td>2 JP</td>
+        <td>- Pengenalan antarmuka Canva.<br>- Membuat poster edukasi.<br>- <b>Tujuan:</b> Siswa mampu mendesain poster kreatif.</td>
+      </tr>
+    </table>
   </div>
 </div>
 
@@ -163,80 +242,95 @@ let currentUser = null;
 let currentCategory = "ibadah";
 let tasks = { ibadah: [], belajar: [] };
 
-function showRegister(){ 
-  document.getElementById("loginPage").style.display="none";
-  document.getElementById("registerPage").style.display="block";
+function showRegister(){animateSwitch("loginPage","registerPage");}
+function showLogin(){animateSwitch("registerPage","loginPage");}
+
+function animateSwitch(from,to){
+  const old=document.getElementById(from);
+  const next=document.getElementById(to);
+  old.classList.add("fade-out");
+  setTimeout(()=>{
+    old.style.display="none";
+    old.classList.remove("fade-out");
+    next.style.display="block";
+    next.style.animation="fadeIn .5s ease";
+  },300);
 }
-function showLogin(){ 
-  document.getElementById("registerPage").style.display="none";
-  document.getElementById("loginPage").style.display="block";
-}
+
 function register(){
-  const u = document.getElementById("newUsername").value.trim();
-  const p = document.getElementById("newPassword").value.trim();
-  if(!u || !p) return alert("Isi username dan password!");
+  const u=document.getElementById("newUsername").value.trim();
+  const p=document.getElementById("newPassword").value.trim();
+  if(!u||!p)return alert("Isi username dan password!");
   users.push({u,p});
-  sessionStorage.setItem("savedUsers", JSON.stringify(users));
+  sessionStorage.setItem("savedUsers",JSON.stringify(users));
   alert("Akun berhasil dibuat!");
   showLogin();
 }
+
 function login(){
-  const u = document.getElementById("username").value.trim();
-  const p = document.getElementById("password").value.trim();
-  const found = users.find(x => x.u === u && x.p === p);
-  if(!found) return alert("Username atau password salah!");
-  currentUser = u;
-  sessionStorage.setItem("loggedInUser", u);
-  document.getElementById("displayUser").textContent = u;
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("dashboardPage").style.display = "block";
+  const u=document.getElementById("username").value.trim();
+  const p=document.getElementById("password").value.trim();
+  const found=users.find(x=>x.u===u&&x.p===p);
+  if(!found)return alert("Username atau password salah!");
+  currentUser=u;
+  sessionStorage.setItem("loggedInUser",u);
+  document.getElementById("displayUser").textContent=u;
+  animateSwitch("loginPage","dashboardPage");
 }
+
 function checkSession(){
-  const savedUser = sessionStorage.getItem("loggedInUser");
+  const savedUser=sessionStorage.getItem("loggedInUser");
   if(savedUser){
-    currentUser = savedUser;
-    document.getElementById("displayUser").textContent = savedUser;
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("dashboardPage").style.display = "block";
+    currentUser=savedUser;
+    document.getElementById("displayUser").textContent=savedUser;
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("dashboardPage").style.display="block";
   }
 }
+
 function logout(){
   sessionStorage.removeItem("loggedInUser");
-  document.getElementById("dashboardPage").style.display="none";
-  document.getElementById("loginPage").style.display="block";
+  animateSwitch("dashboardPage","loginPage");
 }
+
 function showSection(id){
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".section").forEach(s=>{
+    if(s.classList.contains("active")){
+      s.classList.remove("active");
+      s.classList.add("fade-out");
+      setTimeout(()=>{s.classList.remove("fade-out");s.style.display="none";},400);
+    }
+  });
+  const sec=document.getElementById(id);
+  sec.style.display="block";
+  setTimeout(()=>sec.classList.add("active"),100);
 }
+
 function setCategory(cat){
-  currentCategory = cat;
-  document.getElementById("btnIbadah").classList.toggle("active", cat==="ibadah");
-  document.getElementById("btnBelajar").classList.toggle("active", cat==="belajar");
+  currentCategory=cat;
+  document.getElementById("btnIbadah").classList.toggle("active",cat==="ibadah");
+  document.getElementById("btnBelajar").classList.toggle("active",cat==="belajar");
   renderTasks();
 }
+
 function addTask(){
-  const t = document.getElementById("taskInput").value.trim();
-  if(!t) return;
+  const t=document.getElementById("taskInput").value.trim();
+  if(!t)return;
   tasks[currentCategory].push({text:t,done:false});
-  document.getElementById("taskInput").value = "";
+  document.getElementById("taskInput").value="";
   renderTasks();
 }
-function toggleDone(idx){
-  tasks[currentCategory][idx].done = !tasks[currentCategory][idx].done;
-  renderTasks();
-}
-function deleteTask(idx){
-  tasks[currentCategory].splice(idx,1);
-  renderTasks();
-}
+
+function toggleDone(idx){tasks[currentCategory][idx].done=!tasks[currentCategory][idx].done;renderTasks();}
+function deleteTask(idx){tasks[currentCategory].splice(idx,1);renderTasks();}
+
 function renderTasks(){
-  const cont = document.getElementById("tasks");
-  cont.innerHTML = "";
+  const cont=document.getElementById("tasks");
+  cont.innerHTML="";
   tasks[currentCategory].forEach((t,i)=>{
-    const div = document.createElement("div");
-    div.className = "task"+(t.done?" done":"");
-    div.innerHTML = `<span>${t.text}</span>
+    const div=document.createElement("div");
+    div.className="task"+(t.done?" done":"");
+    div.innerHTML=`<span>${t.text}</span>
       <div class='buttons'>
         <button class='done-btn' onclick='toggleDone(${i})'>✓</button>
         <button class='delete-btn' onclick='deleteTask(${i})'>🗑️</button>
@@ -244,10 +338,22 @@ function renderTasks(){
     cont.appendChild(div);
   });
 }
-document.getElementById("taskInput").addEventListener("keydown", e=>{
-  if(e.key==="Enter") addTask();
-});
-window.onload = checkSession;
+
+document.getElementById("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask();});
+
+function showJadwal(){
+  const popup=document.getElementById("jadwalPopup");
+  popup.style.display="flex";
+  popup.querySelector("#jadwalBox").style.animation="popupIn .5s ease forwards";
+}
+function closeJadwal(){
+  const popup=document.getElementById("jadwalPopup");
+  const box=popup.querySelector("#jadwalBox");
+  box.style.animation="popupOut .4s ease forwards";
+  setTimeout(()=>{popup.style.display="none";},400);
+}
+
+window.onload=checkSession;
 </script>
 </body>
 </html>
